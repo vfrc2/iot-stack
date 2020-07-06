@@ -1,0 +1,36 @@
+version: '3.6'
+
+services:
+  nodered:
+    image: nodered/node-red
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered-vol:/data
+      - /etc/localtime:/etc/localtime
+    depends_on:
+      - mqtt
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    restart: always
+    environment:
+      - TZ=Europe/Moscow
+    
+  mqtt:
+    image: "eclipse-mosquitto"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mqtt-vol:/mosquitto
+    restart: always
+    
+  zigbee:
+    image: koenkk/zigbee2mqtt
+    volumes:
+      - zigbee-vol:/app/data
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
+    restart: always
